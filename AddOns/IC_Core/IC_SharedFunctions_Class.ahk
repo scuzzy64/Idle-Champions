@@ -97,7 +97,7 @@ class IC_SharedFunctions_Class extends SH_SharedFunctions
     ; returns this class's version information (string)
     GetVersion()
     {
-        return "v3.0.1, 2025-07-02"
+        return "v3.0.2, 2025-08-01"
     }
 
     ;Takes input of first and second sets of eight byte int64s that make up a quad in memory. Obviously will not work if quad value exceeds double max.
@@ -356,7 +356,7 @@ class IC_SharedFunctions_Class extends SH_SharedFunctions
         this.LevelChampByID( 47, 230, 7000, "{q}") ; level shandie
         ; Make sure the ability handler has the correct base address.
         ; It can change on game restarts or modron resets.
-        this.Memory.ActiveEffectKeyHandler.Refresh()
+        this.Memory.ActiveEffectKeyHandler.Refresh(ActiveEffectKeySharedFunctions.Shandie.TimeScaleWhenNotAttackedHandler.EffectKeyString)
         StartTime := A_TickCount
         ElapsedTime := 0
         timeScale := this.Memory.ReadTimeScaleMultiplier()
@@ -405,7 +405,7 @@ class IC_SharedFunctions_Class extends SH_SharedFunctions
         if(ActiveEffectKeySharedFunctions.Shandie.TimeScaleWhenNotAttackedHandler.ReadDashActive())
             return true
         else if (!this.Memory.ActiveEffectKeyHandler.TimeScaleWhenNotAttackedHandler.BaseAddress)
-            this.Memory.ActiveEffectKeyHandler.Refresh()
+            this.Memory.ActiveEffectKeyHandler.Refresh(ActiveEffectKeySharedFunctions.Shandie.TimeScaleWhenNotAttackedHandler.EffectKeyString)
         return false
     }
 
@@ -542,6 +542,7 @@ class IC_SharedFunctions_Class extends SH_SharedFunctions
             g_SharedData.SwapsMadeThisRun++
             return
         }
+        ; TODO: Fix check to not fail when the formation hasn't finished deploying (out of gold to purchase champs etc.)
         isFormation2 := this.IsCurrentFormation(this.Memory.GetFormationByFavorite(2))
         isWalkZone := this.Settings["PreferredBrivJumpZones"][Mod( this.Memory.ReadCurrentZone(), 50) == 0 ? 50 : Mod( this.Memory.ReadCurrentZone(), 50)] == 0
         ; check to swap briv from favorite 2 to favorite 3 (W to E)
