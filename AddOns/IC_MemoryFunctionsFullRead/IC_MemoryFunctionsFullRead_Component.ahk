@@ -11,7 +11,7 @@ Gui, ICScriptHub:Font, w400
 Gui, ICScriptHub:Add, Checkbox,x145 yp+0 vMemoryFunctionsFullRead_LoadHandlers, Champions
 
 GUIFunctions.UseThemeTextColor("TableTextColor")
-Gui, ICScriptHub:Add, ListView, x15 y+8 w525 h650 vMemoryFunctionsViewID, Function|x|Value
+Gui, ICScriptHub:Add, ListView, x15 y+8 w525 h650 vMemoryFunctionsViewID, Function|Time(s)|x|Value
 
 GUIFunctions.UseThemeListViewBackgroundColor("MemoryFunctionsViewID")
 GUIFunctions.UseThemeTextColor("DefaultTextColor")
@@ -55,11 +55,17 @@ class IC_MemoryFunctionsFullRead_Component
             {
                 parameterString := k . (v.MaxParams > 4 ? "(...)" : (v.MaxParams > 3 ? "(x,y,z)" : (v.MaxParams > 2 ? "(x,y)" : (v.MaxParams > 1 ? "(x)" : ""))))
                 fncToCall := ObjBindMethod(g_SF.Memory, k)
+                lastTick := A_TickCount
                 value := v.Maxparams >= 2 ? fncToCall.Call(valueToPass) : fncToCall.Call()
-                value := IsObject(value) ? ArrFnc.GetDecFormattedArrayString(value) : value
+                timeToExec := (A_TickCount - lastTick) / 1000
+                numberCheck := value[1]
+                if numberCheck is number
+                    value := ArrFnc.GetDecFormattedArrayString(value) ; 0 based arrays lose first element (0) since A_Index starts at 1 and not 0.
+                else if IsObject(value)
+                    value := ArrFnc.GetAlphaNumericArrayString(value)
                 value := value == "" ? "-- ERROR --" : value
                 valuePassedString := (v.Maxparams >= 2 ? "(" . valueToPass . ")" : "")
-                LV_Add(, parameterString, valuePassedString, value)
+                LV_Add(, parameterString, timeToExec, valuePassedString, value)
             }
         }
         if(!MemoryFunctionsFullRead_LoadHandlers)
@@ -78,11 +84,13 @@ class IC_MemoryFunctionsFullRead_Component
                         parameterString := k . "..." . k2 . (v2.MaxParams > 4 ? "(...)" : (v2.MaxParams > 3 ? "(x,y,z)" : (v2.MaxParams > 2 ? "(x,y)" : (v2.MaxParams > 1 ? "(x)" : ""))))
                         currentObject := ActiveEffectKeySharedFunctions[k][k1]
                         fncToCall := ObjBindMethod(currentObject, k2)
+                        lastTick := A_TickCount
                         value := v2.Maxparams >= 2 ? fncToCall.Call(valueToPass) : fncToCall.Call()
+                        timeToExec := (A_TickCount - lastTick) / 1000
                         value := IsObject(value) ? ArrFnc.GetAlphaNumericArrayString(value) : value
                         value := value == "" ? "-- ERROR --" : value
                         valuePassedString := (v2.Maxparams >= 2 ? "(" . valueToPass . ")" : "")
-                        LV_Add(, parameterString, valuePassedString, value)
+                        LV_Add(, parameterString, timeToExec, valuePassedString, value)
                     }
                 }
             }

@@ -5,7 +5,7 @@ class IC_DialogManager_Class extends SH_MemoryPointer
 {
     GetVersion()
     {
-        return "v2.1.2, 2025-08-06"
+        return "v2.1.3, 2025-08-11"
     }
 
     Refresh()
@@ -30,7 +30,7 @@ class IC_DialogManager_Class extends SH_MemoryPointer
                 #include *i %A_LineFile%\..\Imports\IC_DialogManager64_Import.ahk
                 return
             }
-            this.UnityGameEngine.Dialogs.DialogManager.BasePtr := new SH_BasePtr(this.BasePtr.BaseAddress, this.ModuleOffset, this.StructureOffsets)
+            this.UnityGameEngine.Dialogs.DialogManager.BasePtr := new SH_BasePtr(this.BasePtr.BaseAddress, this.ModuleOffset, this.StructureOffsets, "DialogManager")
             this.ResetBasePtr(this.UnityGameEngine.Dialogs.DialogManager)
         }
     }

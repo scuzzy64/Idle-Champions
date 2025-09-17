@@ -98,7 +98,7 @@ class IC_BrivGemFarm_Stats_Component
         g_LeftAlign := posX
         Gui, ICScriptHub:Add, Text, vLoopID x+2 w400, Not Started
         Gui, ICScriptHub:Font, w400
-        Gui, ICScriptHub:Add, Text, x%g_LeftAlign% y+2, Current Area Time (s):
+        Gui, ICScriptHub:Add, Text, x%g_LeftAlign% y+2, Current Area Time (s)
         Gui, ICScriptHub:Add, Text, vdtCurrentLevelTimeID x+2 w200, ; % dtCurrentLevelTime
         Gui, ICScriptHub:Add, Text, x%g_LeftAlign% y+2, Current `Run Time (min):
         Gui, ICScriptHub:Add, Text, vdtCurrentRunTimeID x+2 w50, ; % dtCurrentRunTime
@@ -191,8 +191,6 @@ class IC_BrivGemFarm_Stats_Component
         Gui, ICScriptHub:Add, Text, vTotalRollBacksID x+2 w200,  
         Gui, ICScriptHub:Add, Text, x%g_LeftAlign% y+2, Bad Autoprogression Since Start:
         Gui, ICScriptHub:Add, Text, vBadAutoprogressesID x+2 w200,  
-        Gui, ICScriptHub:Add, Text, x%g_LeftAlign% y+2, Calculated Target Stacks:
-        Gui, ICScriptHub:Add, Text, vCalculatedTargetStacksID x+2 w200,
         Gui, ICScriptHub:Add, Text, x%g_LeftAlign% y+2 vHybridStatsCountTitle, ForceOfflineRunThreshold Count:
         Gui, ICScriptHub:Add, Text, vHybridStatsCountValue x+2 w200,
         GuiControlGet, pos, ICScriptHub:Pos, BrivGemFarmStatsID
@@ -286,7 +284,7 @@ class IC_BrivGemFarm_Stats_Component
         dtCurrentRunTime := Round( ( A_TickCount - previousLoopStartTime ) / 60000, 2 )
         GuiControl, ICScriptHub:, dtCurrentRunTimeID, % dtCurrentRunTime
 
-        dtCurrentLevelTime := Round( ( A_TickCount - previousZoneStartTime ) / 1000, 2 )
+        dtCurrentLevelTime := (lastZone == ": " ? "" : "[" . lastZone . "]: ") . Round( ( A_TickCount - previousZoneStartTime ) / 1000, 2 )
         GuiControl, ICScriptHub:, dtCurrentLevelTimeID, % dtCurrentLevelTime
         if(IsObject(this.SharedRunData))
             GuiControl, ICScriptHub:, LastCloseGameReasonID, % this.SharedRunData.LastCloseReason
@@ -473,12 +471,11 @@ class IC_BrivGemFarm_Stats_Component
             GuiControl, ICScriptHub:, TotalBossesHitID, % SharedRunData.TotalBossesHit
             GuiControl, ICScriptHub:, TotalRollBacksID, % SharedRunData.TotalRollBacks
             GuiControl, ICScriptHub:, BadAutoprogressesID, % SharedRunData.BadAutoProgress
-            GuiControl, ICScriptHub:, CalculatedTargetStacksID, % SharedRunData.TargetStacks
             runsMax := g_BrivUserSettings[ "ForceOfflineRunThreshold" ]
             if (runsMax > 1)
             {
                 GuiControl, ICScriptHub:, HybridStatsCountTitle, ForceOfflineRunThreshold Count:
-                GuiControl, ICScriptHub:, HybridStatsCountValue, % Mod( g_SF.Memory.ReadResetsCount(), runsMax )
+                GuiControl, ICScriptHub:, HybridStatsCountValue, % Mod( g_SF.Memory.ReadResetsCount(), runsMax ) . " / " . g_BrivUserSettings[ "ForceOfflineRunThreshold" ]
             }
             else
             {
